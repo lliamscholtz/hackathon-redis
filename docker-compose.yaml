@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+    cache:
+        container_name: api-redis
+        image: redis
+        restart: always
+        ports:
+            - '6379:6379'
+        command: redis-server --loglevel warning
+        volumes:
+            - cache:/data
+    api:
+        container_name: api-node
+        image: node
+        depends_on:
+            - cache
+        ports:
+            - 3000:3000
+        links:
+            - cache
+        volumes:
+            - ./api:/src
+        command: node /src/bin/www
+volumes:
+    cache:
+        driver: local
